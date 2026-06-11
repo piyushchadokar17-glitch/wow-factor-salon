@@ -369,39 +369,126 @@ function Testimonials() {
   );
 }
 
+const contactSchema = z.object({
+  name: z.string().trim().min(2, "Please enter your name").max(80),
+  phone: z.string().trim().min(7, "Please enter a valid phone").max(20),
+  service: z.string().trim().max(60).optional(),
+  message: z.string().trim().max(600).optional(),
+});
+
 function Contact() {
+  const [status, setStatus] = useState<{ type: "idle" | "ok" | "error"; msg?: string }>({ type: "idle" });
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const parsed = contactSchema.safeParse({
+      name: fd.get("name"),
+      phone: fd.get("phone"),
+      service: fd.get("service") ?? "",
+      message: fd.get("message") ?? "",
+    });
+    if (!parsed.success) {
+      setStatus({ type: "error", msg: parsed.error.issues[0]?.message ?? "Please check the form." });
+      return;
+    }
+    const { name, phone, service, message } = parsed.data;
+    const text = `Hi! I'd like to book an appointment.%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}%0AService: ${encodeURIComponent(service || "—")}%0ANotes: ${encodeURIComponent(message || "—")}`;
+    window.open(`${WHATSAPP_LINK}?text=${text}`, "_blank", "noopener,noreferrer");
+    setStatus({ type: "ok", msg: "Opening WhatsApp to confirm your booking…" });
+    e.currentTarget.reset();
+  };
+
   return (
-    <section id="contact" className="px-6 py-24 lg:px-10">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2">
-        <div>
+    <section id="contact" className="relative px-6 py-24 lg:px-10">
+      <div className="mx-auto max-w-7xl">
+        <div className="mx-auto mb-12 max-w-2xl text-center">
           <h2 className="font-display text-4xl md:text-5xl">Visit The Salon</h2>
-          <p className="mt-3 max-w-md text-foreground/70">
-            Walk-ins are welcome, but appointments are encouraged for a curated experience.
+          <p className="mt-3 text-foreground/70">
+            Walk-ins are welcome — appointments encouraged for a curated experience.
           </p>
-          <div className="mt-8 space-y-5">
-            <ContactRow icon={MapPin} label="Address" value="123 Luxe Boulevard, Elegance Square, City" />
-            <ContactRow icon={Phone} label="Phone" value="+1 (234) 567 890" href="tel:+12345678900" />
-            <ContactRow icon={MessageCircle} label="WhatsApp" value="Chat with us instantly" href="https://wa.me/12345678900" />
-          </div>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="https://wa.me/12345678900" className="inline-flex items-center gap-2 rounded-full bg-[oklch(0.72_0.18_150)] px-6 py-3 font-medium text-white shadow-soft transition-transform hover:-translate-y-0.5">
-              <MessageCircle className="h-4 w-4" /> WhatsApp Now
-            </a>
-            <a href="tel:+12345678900" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5">
-              <Calendar className="h-4 w-4" /> Book Appointment
-            </a>
-          </div>
         </div>
-        <div className="overflow-hidden rounded-3xl shadow-card">
-          <iframe
-            title="Salon location"
-            src="https://www.google.com/maps?q=Times+Square+New+York&output=embed"
-            className="h-full min-h-[360px] w-full border-0"
-            loading="lazy"
-          />
+
+        <div className="grid gap-8 lg:grid-cols-2">
+          {/* Info + map */}
+          <div className="space-y-6">
+            <div className="rounded-3xl bg-card p-7 shadow-card">
+              <div className="space-y-5">
+                <ContactRow icon={MapPin} label="Address" value={ADDRESS} />
+                <ContactRow icon={Phone} label="Phone" value={PHONE_DISPLAY} href={`tel:${PHONE_RAW}`} />
+                <ContactRow icon={MessageCircle} label="WhatsApp" value="Chat with us instantly" href={WHATSAPP_LINK} />
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[oklch(0.72_0.18_150)] px-6 py-3 font-medium text-white shadow-soft transition-transform hover:-translate-y-0.5">
+                  <MessageCircle className="h-4 w-4" /> WhatsApp Now
+                </a>
+                <a href={`tel:${PHONE_RAW}`} className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5">
+                  <Phone className="h-4 w-4" /> Call Now
+                </a>
+              </div>
+            </div>
+            <div className="overflow-hidden rounded-3xl shadow-card">
+              <iframe
+                title="The Wow Factor — Nipania, Indore"
+                src={MAP_EMBED}
+                className="h-[320px] w-full border-0"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={onSubmit} className="rounded-3xl bg-card p-8 shadow-card">
+            <h3 className="font-display text-2xl">Book Your Appointment</h3>
+            <p className="mt-1 text-sm text-foreground/65">We&apos;ll confirm your slot via WhatsApp within minutes.</p>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <Field label="Full Name" name="name" placeholder="Your name" required />
+              <Field label="Phone" name="phone" placeholder="+91 …" required type="tel" />
+            </div>
+            <div className="mt-4">
+              <label className="text-xs font-semibold uppercase tracking-widest text-foreground/70">Service</label>
+              <select name="service" defaultValue="" className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+                <option value="">Select a service (optional)</option>
+                {services.map((s) => (
+                  <option key={s.title} value={s.title}>{s.title}</option>
+                ))}
+              </select>
+            </div>
+            <div className="mt-4">
+              <label className="text-xs font-semibold uppercase tracking-widest text-foreground/70">Notes</label>
+              <textarea name="message" rows={4} maxLength={600} placeholder="Tell us about your preferred date, time or any requests…" className="mt-2 w-full resize-none rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+            </div>
+
+            {status.type !== "idle" && (
+              <div className={`mt-4 rounded-xl px-4 py-3 text-sm ${status.type === "ok" ? "bg-rose-soft text-primary" : "bg-destructive/10 text-destructive"}`}>
+                {status.msg}
+              </div>
+            )}
+
+            <button type="submit" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 font-medium text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5">
+              <Send className="h-4 w-4" /> Request Booking
+            </button>
+          </form>
         </div>
       </div>
     </section>
+  );
+}
+
+function Field({ label, name, type = "text", required, placeholder }: { label: string; name: string; type?: string; required?: boolean; placeholder?: string }) {
+  return (
+    <div>
+      <label className="text-xs font-semibold uppercase tracking-widest text-foreground/70">{label}</label>
+      <input
+        name={name}
+        type={type}
+        required={required}
+        placeholder={placeholder}
+        maxLength={120}
+        className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+      />
+    </div>
   );
 }
 
@@ -411,7 +498,7 @@ function ContactRow({ icon: Icon, label, value, href }: { icon: typeof MapPin; l
       <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-soft text-primary">
         <Icon className="h-5 w-5" />
       </div>
-      <div>
+      <div className="min-w-0">
         <div className="text-xs font-semibold uppercase tracking-widest text-foreground/60">{label}</div>
         <div className="mt-0.5 text-foreground">{value}</div>
       </div>
@@ -423,11 +510,12 @@ function ContactRow({ icon: Icon, label, value, href }: { icon: typeof MapPin; l
 function Footer() {
   return (
     <footer className="bg-secondary/80 px-6 pb-10 pt-16 lg:px-10">
-      <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-3">
-        <div>
+      <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-4">
+        <div className="md:col-span-1">
           <div className="font-display text-xl text-primary">The Wow Factor</div>
           <p className="mt-3 max-w-xs text-sm text-foreground/70">
-            Crafted for Excellence. Dedicated to providing a sanctuary of beauty and confidence for everyone.
+            Indore&apos;s luxury unisex salon. Crafted for excellence — a sanctuary of beauty,
+            care and confidence.
           </p>
           <div className="mt-5 flex gap-3">
             <a href="https://instagram.com" aria-label="Instagram" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-card text-primary shadow-card transition-transform hover:-translate-y-0.5">
@@ -436,29 +524,44 @@ function Footer() {
             <a href="https://facebook.com" aria-label="Facebook" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-card text-primary shadow-card transition-transform hover:-translate-y-0.5">
               <Facebook className="h-4 w-4" />
             </a>
+            <a href={WHATSAPP_LINK} aria-label="WhatsApp" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-card text-primary shadow-card transition-transform hover:-translate-y-0.5">
+              <MessageCircle className="h-4 w-4" />
+            </a>
           </div>
         </div>
         <div>
-          <div className="text-xs font-semibold uppercase tracking-widest text-primary">Explore</div>
+          <div className="text-xs font-semibold uppercase tracking-widest text-primary">Quick Links</div>
           <ul className="mt-4 space-y-2 text-sm text-foreground/75">
+            <li><a href="#home" className="hover:text-primary">Home</a></li>
             <li><a href="#about" className="hover:text-primary">About</a></li>
-            <li><a href="#services" className="hover:text-primary">Services</a></li>
             <li><a href="#gallery" className="hover:text-primary">Gallery</a></li>
-            <li><a href="#contact" className="hover:text-primary">Booking Policy</a></li>
+            <li><a href="#contact" className="hover:text-primary">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-widest text-primary">Services</div>
+          <ul className="mt-4 space-y-2 text-sm text-foreground/75">
+            <li>Bridal Makeup</li>
+            <li>Hair & Styling</li>
+            <li>Facials & Skin Care</li>
+            <li>Spa & Massage</li>
+            <li>Laser Hair Removal</li>
           </ul>
         </div>
         <div>
           <div className="text-xs font-semibold uppercase tracking-widest text-primary">Contact</div>
           <ul className="mt-4 space-y-2 text-sm text-foreground/75">
-            <li>123 Luxe Boulevard, Elegance Square</li>
-            <li>+1 (234) 567 890</li>
-            <li>hello@thewowfactor.com</li>
+            <li>{ADDRESS}</li>
+            <li><a href={`tel:${PHONE_RAW}`} className="hover:text-primary">{PHONE_DISPLAY}</a></li>
+            <li><a href={WHATSAPP_LINK} className="hover:text-primary">WhatsApp Chat</a></li>
           </ul>
         </div>
       </div>
       <div className="mx-auto mt-12 max-w-7xl border-t border-border pt-6 text-center text-xs text-foreground/55">
-        © {new Date().getFullYear()} The Wow Factor Unisex Salon. All rights reserved.
+        © {new Date().getFullYear()} The Wow Factor Unisex Salon, Indore. All rights reserved.
       </div>
     </footer>
+  );
+}
   );
 }
