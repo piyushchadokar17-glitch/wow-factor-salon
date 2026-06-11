@@ -240,13 +240,14 @@ function Services() {
         </div>
 
         <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Featured bridal */}
           <div className="group relative col-span-1 row-span-2 overflow-hidden rounded-3xl shadow-card lg:row-span-2">
             <img src={serviceBridal} alt="Bridal makeup" className="h-full min-h-[420px] w-full object-cover transition-transform duration-700 group-hover:scale-105" width={1280} height={896} loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
             <div className="absolute bottom-0 left-0 p-8 text-white">
               <span className="inline-flex rounded-full bg-white/25 px-3 py-1 text-xs font-semibold backdrop-blur">Premium Service</span>
-              <h3 className="mt-3 font-display text-3xl">Bridal &amp; Party Makeup</h3>
-              <p className="mt-2 max-w-sm text-sm text-white/85">Luxe transformations for your most precious moments.</p>
+              <h3 className="mt-3 font-display text-3xl">Bridal &amp; Engagement</h3>
+              <p className="mt-2 max-w-sm text-sm text-white/85">Luxe airbrush transformations for your most precious moments.</p>
             </div>
           </div>
 
@@ -254,6 +255,7 @@ function Services() {
             <ServiceCard key={s.title} {...s} />
           ))}
 
+          {/* Featured spa */}
           <div className="group relative overflow-hidden rounded-3xl shadow-card md:col-span-2 lg:col-span-1">
             <img src={serviceSpa} alt="Spa treatment" className="h-full min-h-[260px] w-full object-cover transition-transform duration-700 group-hover:scale-105" width={1024} height={1024} loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
