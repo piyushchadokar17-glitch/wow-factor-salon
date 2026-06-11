@@ -17,7 +17,16 @@ import {
   ArrowRight,
   Instagram,
   Facebook,
+  Brush,
+  Eye,
+  Zap,
+  Gem,
+  Leaf,
+  Wand2,
+  Send,
 } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { z } from "zod";
 import hero from "@/assets/hero.jpg";
 import about from "@/assets/about.jpg";
 import serviceBridal from "@/assets/service-bridal.jpg";
@@ -32,12 +41,14 @@ import avatar2 from "@/assets/avatar-2.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "The Wow Factor Unisex Salon — Hair, Makeup & Spa" },
-      { name: "description", content: "Premium unisex salon — hair styling, bridal & party makeup, facials, manicure, spa & massage. Enhancing Beauty, Inspiring Confidence." },
-      { property: "og:title", content: "The Wow Factor Unisex Salon" },
-      { property: "og:description", content: "Enhancing Beauty, Inspiring Confidence." },
+      { title: "The Wow Factor Unisex Salon — Best Luxury Salon in Indore" },
+      { name: "description", content: "Indore's trusted luxury unisex salon — bridal & party makeup, haircare, facials, spa & nails. 4.9★ rated by 1400+ happy clients. Book at Nipania, Indore." },
+      { name: "keywords", content: "salon in Indore, bridal makeup Indore, unisex salon Nipania, best beauty salon Indore, party makeup Indore" },
+      { property: "og:title", content: "The Wow Factor Unisex Salon — Indore" },
+      { property: "og:description", content: "Where Beauty Meets Confidence. 4.9★ rated luxury salon in Nipania, Indore." },
       { property: "og:image", content: hero },
       { name: "twitter:image", content: hero },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,
@@ -52,22 +63,27 @@ const navLinks = [
 ];
 
 const services = [
-  { icon: Scissors, title: "Hair Styling", desc: "Precision cuts and editorial styling for any occasion." },
-  { icon: Sparkles, title: "Bridal Makeup", desc: "Luxe transformations for your most precious day." },
-  { icon: Heart, title: "Party Makeup", desc: "Statement looks for every celebration." },
-  { icon: Flower2, title: "Facials", desc: "Bespoke skincare treatments for a radiant glow." },
-  { icon: Droplets, title: "Skin Care", desc: "Clinical-grade treatments with a holistic touch." },
-  { icon: Hand, title: "Mani & Pedi", desc: "Luxury nail care and therapeutic hand treatments." },
-  { icon: Sparkles, title: "Haircut", desc: "Tailored cuts for men and women by master stylists." },
-  { icon: Flower2, title: "Spa & Massage", desc: "A sensory journey to deep relaxation and tranquility." },
+  { icon: Scissors, title: "Haircut & Hairstyling", desc: "Precision cuts and editorial styling for every face shape." },
+  { icon: Sparkles, title: "Bridal Makeup", desc: "Timeless luxe bridal looks for your most precious day." },
+  { icon: Heart, title: "Party Makeup", desc: "Statement looks for every celebration and soirée." },
+  { icon: Gem, title: "Engagement Makeup", desc: "Soft, romantic glam to make your moment unforgettable." },
+  { icon: Wand2, title: "Airbrush Makeup", desc: "Flawless HD-ready finish that lasts all day and night." },
+  { icon: Flower2, title: "Facials & Skin Care", desc: "Bespoke skincare rituals for a luminous, radiant glow." },
+  { icon: Droplets, title: "Acne Treatments", desc: "Clinical-grade therapies to clarify and calm your skin." },
+  { icon: Hand, title: "Manicure & Pedicure", desc: "Luxury nail care with deep-conditioning hand & foot rituals." },
+  { icon: Brush, title: "Acrylic Nails", desc: "Custom nail art, extensions and gel finishes." },
+  { icon: Leaf, title: "Spa & Massage", desc: "A sensory journey to deep relaxation in our suites." },
+  { icon: Sparkles, title: "Waxing", desc: "Gentle, premium wax for silky-smooth skin." },
+  { icon: Zap, title: "Laser Hair Removal", desc: "Painless, long-lasting smoothness with modern tech." },
+  { icon: Eye, title: "Eyebrow & Eyelash", desc: "Brow shaping, lash lifts and extensions by specialists." },
 ];
 
 const stats = [
-  { icon: Star, value: "4.9★ Rating", label: "Verified Excellence" },
-  { icon: Users, value: "1.4K+ Happy", label: "Loyal Clientele" },
-  { icon: Award, value: "Experts", label: "Certified Artists" },
-  { icon: Droplets, value: "Hygienic", label: "Pure Environment" },
+  { icon: Star, value: "4.9★ Rating", label: "1.4K+ Reviews" },
+  { icon: Users, value: "1400+ Happy", label: "Loyal Clientele" },
+  { icon: Award, value: "Certified", label: "Beauty Experts" },
   { icon: Package, value: "Premium", label: "Global Products" },
+  { icon: Droplets, value: "Hygienic", label: "Pure Environment" },
 ];
 
 const gallery = [
@@ -79,18 +95,24 @@ const gallery = [
 
 const testimonials = [
   {
-    quote: "The most incredible experience I've ever had at a salon. The atmosphere is so calming and my stylist truly understood what I wanted. I left feeling like a brand new version of myself.",
-    name: "Sarah Jenkins",
+    quote: "Got my bridal makeup done here and I cannot stop staring at my pictures! The team is so patient, skilled and genuinely caring. Best salon in Indore for brides.",
+    name: "Aanya Sharma",
     role: "Bridal Client",
     avatar: avatar1,
   },
   {
-    quote: "I've been to many luxury salons around the world, and The Wow Factor stands out for its attention to detail and hygienic standards. Their facials are purely divine.",
-    name: "Elena Rodriguez",
+    quote: "Their facials have completely transformed my skin. The ambience is gorgeous, the hygiene is on point, and the staff treat you like royalty. Highly recommended.",
+    name: "Priya Malhotra",
     role: "Skincare Enthusiast",
     avatar: avatar2,
   },
 ];
+
+const PHONE_RAW = "+917905293466";
+const PHONE_DISPLAY = "+91 79052 93466";
+const WHATSAPP_LINK = "https://wa.me/917905293466";
+const ADDRESS = "12, Near Apollo DB City, Samar Park Colony, Nipania, Indore, Madhya Pradesh 452010";
+const MAP_EMBED = "https://www.google.com/maps?q=Samar+Park+Colony+Nipania+Indore&output=embed";
 
 function Home() {
   return (
@@ -145,20 +167,20 @@ function Hero() {
           <div className="absolute inset-0 flex items-center">
             <div className="max-w-xl px-8 md:px-14">
               <span className="inline-flex items-center rounded-full bg-rose-soft px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
-                Experience Luxury
+                Indore's Luxury Salon
               </span>
               <h1 className="mt-5 font-display text-5xl leading-[1.05] text-foreground md:text-6xl lg:text-7xl">
-                The Wow Factor<br />Unisex Salon
+                Where Beauty<br />Meets Confidence
               </h1>
               <p className="mt-6 max-w-md text-base leading-relaxed text-foreground/75 md:text-lg">
-                Enhancing Beauty, Inspiring Confidence. Immerse yourself in a transformative,
-                indulgent experience that feels both exclusive and effortlessly seamless.
+                Indore's trusted luxury salon with a 4.9★ rating and 1400+ happy clients.
+                Indulge in bridal, beauty, skincare and haircare crafted by certified experts.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href="#contact" className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-medium text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5">
                   <Calendar className="h-4 w-4" /> Book Appointment
                 </a>
-                <a href="tel:+12345678900" className="inline-flex items-center gap-2 rounded-full bg-white/70 px-7 py-3.5 font-medium text-primary backdrop-blur transition-colors hover:bg-white">
+                <a href={`tel:${PHONE_RAW}`} className="inline-flex items-center gap-2 rounded-full bg-white/70 px-7 py-3.5 font-medium text-primary backdrop-blur transition-colors hover:bg-white">
                   <Phone className="h-4 w-4" /> Call Now
                 </a>
               </div>
