@@ -17,7 +17,16 @@ import {
   ArrowRight,
   Instagram,
   Facebook,
+  Brush,
+  Eye,
+  Zap,
+  Gem,
+  Leaf,
+  Wand2,
+  Send,
 } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { z } from "zod";
 import hero from "@/assets/hero.jpg";
 import about from "@/assets/about.jpg";
 import serviceBridal from "@/assets/service-bridal.jpg";
@@ -32,12 +41,14 @@ import avatar2 from "@/assets/avatar-2.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "The Wow Factor Unisex Salon — Hair, Makeup & Spa" },
-      { name: "description", content: "Premium unisex salon — hair styling, bridal & party makeup, facials, manicure, spa & massage. Enhancing Beauty, Inspiring Confidence." },
-      { property: "og:title", content: "The Wow Factor Unisex Salon" },
-      { property: "og:description", content: "Enhancing Beauty, Inspiring Confidence." },
+      { title: "The Wow Factor Unisex Salon — Best Luxury Salon in Indore" },
+      { name: "description", content: "Indore's trusted luxury unisex salon — bridal & party makeup, haircare, facials, spa & nails. 4.9★ rated by 1400+ happy clients. Book at Nipania, Indore." },
+      { name: "keywords", content: "salon in Indore, bridal makeup Indore, unisex salon Nipania, best beauty salon Indore, party makeup Indore" },
+      { property: "og:title", content: "The Wow Factor Unisex Salon — Indore" },
+      { property: "og:description", content: "Where Beauty Meets Confidence. 4.9★ rated luxury salon in Nipania, Indore." },
       { property: "og:image", content: hero },
       { name: "twitter:image", content: hero },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,
@@ -52,22 +63,27 @@ const navLinks = [
 ];
 
 const services = [
-  { icon: Scissors, title: "Hair Styling", desc: "Precision cuts and editorial styling for any occasion." },
-  { icon: Sparkles, title: "Bridal Makeup", desc: "Luxe transformations for your most precious day." },
-  { icon: Heart, title: "Party Makeup", desc: "Statement looks for every celebration." },
-  { icon: Flower2, title: "Facials", desc: "Bespoke skincare treatments for a radiant glow." },
-  { icon: Droplets, title: "Skin Care", desc: "Clinical-grade treatments with a holistic touch." },
-  { icon: Hand, title: "Mani & Pedi", desc: "Luxury nail care and therapeutic hand treatments." },
-  { icon: Sparkles, title: "Haircut", desc: "Tailored cuts for men and women by master stylists." },
-  { icon: Flower2, title: "Spa & Massage", desc: "A sensory journey to deep relaxation and tranquility." },
+  { icon: Scissors, title: "Haircut & Hairstyling", desc: "Precision cuts and editorial styling for every face shape." },
+  { icon: Sparkles, title: "Bridal Makeup", desc: "Timeless luxe bridal looks for your most precious day." },
+  { icon: Heart, title: "Party Makeup", desc: "Statement looks for every celebration and soirée." },
+  { icon: Gem, title: "Engagement Makeup", desc: "Soft, romantic glam to make your moment unforgettable." },
+  { icon: Wand2, title: "Airbrush Makeup", desc: "Flawless HD-ready finish that lasts all day and night." },
+  { icon: Flower2, title: "Facials & Skin Care", desc: "Bespoke skincare rituals for a luminous, radiant glow." },
+  { icon: Droplets, title: "Acne Treatments", desc: "Clinical-grade therapies to clarify and calm your skin." },
+  { icon: Hand, title: "Manicure & Pedicure", desc: "Luxury nail care with deep-conditioning hand & foot rituals." },
+  { icon: Brush, title: "Acrylic Nails", desc: "Custom nail art, extensions and gel finishes." },
+  { icon: Leaf, title: "Spa & Massage", desc: "A sensory journey to deep relaxation in our suites." },
+  { icon: Sparkles, title: "Waxing", desc: "Gentle, premium wax for silky-smooth skin." },
+  { icon: Zap, title: "Laser Hair Removal", desc: "Painless, long-lasting smoothness with modern tech." },
+  { icon: Eye, title: "Eyebrow & Eyelash", desc: "Brow shaping, lash lifts and extensions by specialists." },
 ];
 
 const stats = [
-  { icon: Star, value: "4.9★ Rating", label: "Verified Excellence" },
-  { icon: Users, value: "1.4K+ Happy", label: "Loyal Clientele" },
-  { icon: Award, value: "Experts", label: "Certified Artists" },
-  { icon: Droplets, value: "Hygienic", label: "Pure Environment" },
+  { icon: Star, value: "4.9★ Rating", label: "1.4K+ Reviews" },
+  { icon: Users, value: "1400+ Happy", label: "Loyal Clientele" },
+  { icon: Award, value: "Certified", label: "Beauty Experts" },
   { icon: Package, value: "Premium", label: "Global Products" },
+  { icon: Droplets, value: "Hygienic", label: "Pure Environment" },
 ];
 
 const gallery = [
@@ -79,18 +95,24 @@ const gallery = [
 
 const testimonials = [
   {
-    quote: "The most incredible experience I've ever had at a salon. The atmosphere is so calming and my stylist truly understood what I wanted. I left feeling like a brand new version of myself.",
-    name: "Sarah Jenkins",
+    quote: "Got my bridal makeup done here and I cannot stop staring at my pictures! The team is so patient, skilled and genuinely caring. Best salon in Indore for brides.",
+    name: "Aanya Sharma",
     role: "Bridal Client",
     avatar: avatar1,
   },
   {
-    quote: "I've been to many luxury salons around the world, and The Wow Factor stands out for its attention to detail and hygienic standards. Their facials are purely divine.",
-    name: "Elena Rodriguez",
+    quote: "Their facials have completely transformed my skin. The ambience is gorgeous, the hygiene is on point, and the staff treat you like royalty. Highly recommended.",
+    name: "Priya Malhotra",
     role: "Skincare Enthusiast",
     avatar: avatar2,
   },
 ];
+
+const PHONE_RAW = "+917905293466";
+const PHONE_DISPLAY = "+91 79052 93466";
+const WHATSAPP_LINK = "https://wa.me/917905293466";
+const ADDRESS = "12, Near Apollo DB City, Samar Park Colony, Nipania, Indore, Madhya Pradesh 452010";
+const MAP_EMBED = "https://www.google.com/maps?q=Samar+Park+Colony+Nipania+Indore&output=embed";
 
 function Home() {
   return (
@@ -145,20 +167,20 @@ function Hero() {
           <div className="absolute inset-0 flex items-center">
             <div className="max-w-xl px-8 md:px-14">
               <span className="inline-flex items-center rounded-full bg-rose-soft px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
-                Experience Luxury
+                Indore's Luxury Salon
               </span>
               <h1 className="mt-5 font-display text-5xl leading-[1.05] text-foreground md:text-6xl lg:text-7xl">
-                The Wow Factor<br />Unisex Salon
+                Where Beauty<br />Meets Confidence
               </h1>
               <p className="mt-6 max-w-md text-base leading-relaxed text-foreground/75 md:text-lg">
-                Enhancing Beauty, Inspiring Confidence. Immerse yourself in a transformative,
-                indulgent experience that feels both exclusive and effortlessly seamless.
+                Indore's trusted luxury salon with a 4.9★ rating and 1400+ happy clients.
+                Indulge in bridal, beauty, skincare and haircare crafted by certified experts.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href="#contact" className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 font-medium text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5">
                   <Calendar className="h-4 w-4" /> Book Appointment
                 </a>
-                <a href="tel:+12345678900" className="inline-flex items-center gap-2 rounded-full bg-white/70 px-7 py-3.5 font-medium text-primary backdrop-blur transition-colors hover:bg-white">
+                <a href={`tel:${PHONE_RAW}`} className="inline-flex items-center gap-2 rounded-full bg-white/70 px-7 py-3.5 font-medium text-primary backdrop-blur transition-colors hover:bg-white">
                   <Phone className="h-4 w-4" /> Call Now
                 </a>
               </div>
@@ -218,13 +240,14 @@ function Services() {
         </div>
 
         <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Featured bridal */}
           <div className="group relative col-span-1 row-span-2 overflow-hidden rounded-3xl shadow-card lg:row-span-2">
             <img src={serviceBridal} alt="Bridal makeup" className="h-full min-h-[420px] w-full object-cover transition-transform duration-700 group-hover:scale-105" width={1280} height={896} loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
             <div className="absolute bottom-0 left-0 p-8 text-white">
               <span className="inline-flex rounded-full bg-white/25 px-3 py-1 text-xs font-semibold backdrop-blur">Premium Service</span>
-              <h3 className="mt-3 font-display text-3xl">Bridal &amp; Party Makeup</h3>
-              <p className="mt-2 max-w-sm text-sm text-white/85">Luxe transformations for your most precious moments.</p>
+              <h3 className="mt-3 font-display text-3xl">Bridal &amp; Engagement</h3>
+              <p className="mt-2 max-w-sm text-sm text-white/85">Luxe airbrush transformations for your most precious moments.</p>
             </div>
           </div>
 
@@ -232,6 +255,7 @@ function Services() {
             <ServiceCard key={s.title} {...s} />
           ))}
 
+          {/* Featured spa */}
           <div className="group relative overflow-hidden rounded-3xl shadow-card md:col-span-2 lg:col-span-1">
             <img src={serviceSpa} alt="Spa treatment" className="h-full min-h-[260px] w-full object-cover transition-transform duration-700 group-hover:scale-105" width={1024} height={1024} loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
@@ -345,39 +369,126 @@ function Testimonials() {
   );
 }
 
+const contactSchema = z.object({
+  name: z.string().trim().min(2, "Please enter your name").max(80),
+  phone: z.string().trim().min(7, "Please enter a valid phone").max(20),
+  service: z.string().trim().max(60).optional(),
+  message: z.string().trim().max(600).optional(),
+});
+
 function Contact() {
+  const [status, setStatus] = useState<{ type: "idle" | "ok" | "error"; msg?: string }>({ type: "idle" });
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const parsed = contactSchema.safeParse({
+      name: fd.get("name"),
+      phone: fd.get("phone"),
+      service: fd.get("service") ?? "",
+      message: fd.get("message") ?? "",
+    });
+    if (!parsed.success) {
+      setStatus({ type: "error", msg: parsed.error.issues[0]?.message ?? "Please check the form." });
+      return;
+    }
+    const { name, phone, service, message } = parsed.data;
+    const text = `Hi! I'd like to book an appointment.%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}%0AService: ${encodeURIComponent(service || "—")}%0ANotes: ${encodeURIComponent(message || "—")}`;
+    window.open(`${WHATSAPP_LINK}?text=${text}`, "_blank", "noopener,noreferrer");
+    setStatus({ type: "ok", msg: "Opening WhatsApp to confirm your booking…" });
+    e.currentTarget.reset();
+  };
+
   return (
-    <section id="contact" className="px-6 py-24 lg:px-10">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2">
-        <div>
+    <section id="contact" className="relative px-6 py-24 lg:px-10">
+      <div className="mx-auto max-w-7xl">
+        <div className="mx-auto mb-12 max-w-2xl text-center">
           <h2 className="font-display text-4xl md:text-5xl">Visit The Salon</h2>
-          <p className="mt-3 max-w-md text-foreground/70">
-            Walk-ins are welcome, but appointments are encouraged for a curated experience.
+          <p className="mt-3 text-foreground/70">
+            Walk-ins are welcome — appointments encouraged for a curated experience.
           </p>
-          <div className="mt-8 space-y-5">
-            <ContactRow icon={MapPin} label="Address" value="123 Luxe Boulevard, Elegance Square, City" />
-            <ContactRow icon={Phone} label="Phone" value="+1 (234) 567 890" href="tel:+12345678900" />
-            <ContactRow icon={MessageCircle} label="WhatsApp" value="Chat with us instantly" href="https://wa.me/12345678900" />
-          </div>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="https://wa.me/12345678900" className="inline-flex items-center gap-2 rounded-full bg-[oklch(0.72_0.18_150)] px-6 py-3 font-medium text-white shadow-soft transition-transform hover:-translate-y-0.5">
-              <MessageCircle className="h-4 w-4" /> WhatsApp Now
-            </a>
-            <a href="tel:+12345678900" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5">
-              <Calendar className="h-4 w-4" /> Book Appointment
-            </a>
-          </div>
         </div>
-        <div className="overflow-hidden rounded-3xl shadow-card">
-          <iframe
-            title="Salon location"
-            src="https://www.google.com/maps?q=Times+Square+New+York&output=embed"
-            className="h-full min-h-[360px] w-full border-0"
-            loading="lazy"
-          />
+
+        <div className="grid gap-8 lg:grid-cols-2">
+          {/* Info + map */}
+          <div className="space-y-6">
+            <div className="rounded-3xl bg-card p-7 shadow-card">
+              <div className="space-y-5">
+                <ContactRow icon={MapPin} label="Address" value={ADDRESS} />
+                <ContactRow icon={Phone} label="Phone" value={PHONE_DISPLAY} href={`tel:${PHONE_RAW}`} />
+                <ContactRow icon={MessageCircle} label="WhatsApp" value="Chat with us instantly" href={WHATSAPP_LINK} />
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[oklch(0.72_0.18_150)] px-6 py-3 font-medium text-white shadow-soft transition-transform hover:-translate-y-0.5">
+                  <MessageCircle className="h-4 w-4" /> WhatsApp Now
+                </a>
+                <a href={`tel:${PHONE_RAW}`} className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5">
+                  <Phone className="h-4 w-4" /> Call Now
+                </a>
+              </div>
+            </div>
+            <div className="overflow-hidden rounded-3xl shadow-card">
+              <iframe
+                title="The Wow Factor — Nipania, Indore"
+                src={MAP_EMBED}
+                className="h-[320px] w-full border-0"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={onSubmit} className="rounded-3xl bg-card p-8 shadow-card">
+            <h3 className="font-display text-2xl">Book Your Appointment</h3>
+            <p className="mt-1 text-sm text-foreground/65">We&apos;ll confirm your slot via WhatsApp within minutes.</p>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <Field label="Full Name" name="name" placeholder="Your name" required />
+              <Field label="Phone" name="phone" placeholder="+91 …" required type="tel" />
+            </div>
+            <div className="mt-4">
+              <label className="text-xs font-semibold uppercase tracking-widest text-foreground/70">Service</label>
+              <select name="service" defaultValue="" className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+                <option value="">Select a service (optional)</option>
+                {services.map((s) => (
+                  <option key={s.title} value={s.title}>{s.title}</option>
+                ))}
+              </select>
+            </div>
+            <div className="mt-4">
+              <label className="text-xs font-semibold uppercase tracking-widest text-foreground/70">Notes</label>
+              <textarea name="message" rows={4} maxLength={600} placeholder="Tell us about your preferred date, time or any requests…" className="mt-2 w-full resize-none rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+            </div>
+
+            {status.type !== "idle" && (
+              <div className={`mt-4 rounded-xl px-4 py-3 text-sm ${status.type === "ok" ? "bg-rose-soft text-primary" : "bg-destructive/10 text-destructive"}`}>
+                {status.msg}
+              </div>
+            )}
+
+            <button type="submit" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 font-medium text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5">
+              <Send className="h-4 w-4" /> Request Booking
+            </button>
+          </form>
         </div>
       </div>
     </section>
+  );
+}
+
+function Field({ label, name, type = "text", required, placeholder }: { label: string; name: string; type?: string; required?: boolean; placeholder?: string }) {
+  return (
+    <div>
+      <label className="text-xs font-semibold uppercase tracking-widest text-foreground/70">{label}</label>
+      <input
+        name={name}
+        type={type}
+        required={required}
+        placeholder={placeholder}
+        maxLength={120}
+        className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+      />
+    </div>
   );
 }
 
@@ -387,7 +498,7 @@ function ContactRow({ icon: Icon, label, value, href }: { icon: typeof MapPin; l
       <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-soft text-primary">
         <Icon className="h-5 w-5" />
       </div>
-      <div>
+      <div className="min-w-0">
         <div className="text-xs font-semibold uppercase tracking-widest text-foreground/60">{label}</div>
         <div className="mt-0.5 text-foreground">{value}</div>
       </div>
@@ -399,11 +510,12 @@ function ContactRow({ icon: Icon, label, value, href }: { icon: typeof MapPin; l
 function Footer() {
   return (
     <footer className="bg-secondary/80 px-6 pb-10 pt-16 lg:px-10">
-      <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-3">
-        <div>
+      <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-4">
+        <div className="md:col-span-1">
           <div className="font-display text-xl text-primary">The Wow Factor</div>
           <p className="mt-3 max-w-xs text-sm text-foreground/70">
-            Crafted for Excellence. Dedicated to providing a sanctuary of beauty and confidence for everyone.
+            Indore&apos;s luxury unisex salon. Crafted for excellence — a sanctuary of beauty,
+            care and confidence.
           </p>
           <div className="mt-5 flex gap-3">
             <a href="https://instagram.com" aria-label="Instagram" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-card text-primary shadow-card transition-transform hover:-translate-y-0.5">
@@ -412,28 +524,41 @@ function Footer() {
             <a href="https://facebook.com" aria-label="Facebook" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-card text-primary shadow-card transition-transform hover:-translate-y-0.5">
               <Facebook className="h-4 w-4" />
             </a>
+            <a href={WHATSAPP_LINK} aria-label="WhatsApp" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-card text-primary shadow-card transition-transform hover:-translate-y-0.5">
+              <MessageCircle className="h-4 w-4" />
+            </a>
           </div>
         </div>
         <div>
-          <div className="text-xs font-semibold uppercase tracking-widest text-primary">Explore</div>
+          <div className="text-xs font-semibold uppercase tracking-widest text-primary">Quick Links</div>
           <ul className="mt-4 space-y-2 text-sm text-foreground/75">
+            <li><a href="#home" className="hover:text-primary">Home</a></li>
             <li><a href="#about" className="hover:text-primary">About</a></li>
-            <li><a href="#services" className="hover:text-primary">Services</a></li>
             <li><a href="#gallery" className="hover:text-primary">Gallery</a></li>
-            <li><a href="#contact" className="hover:text-primary">Booking Policy</a></li>
+            <li><a href="#contact" className="hover:text-primary">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-widest text-primary">Services</div>
+          <ul className="mt-4 space-y-2 text-sm text-foreground/75">
+            <li>Bridal Makeup</li>
+            <li>Hair & Styling</li>
+            <li>Facials & Skin Care</li>
+            <li>Spa & Massage</li>
+            <li>Laser Hair Removal</li>
           </ul>
         </div>
         <div>
           <div className="text-xs font-semibold uppercase tracking-widest text-primary">Contact</div>
           <ul className="mt-4 space-y-2 text-sm text-foreground/75">
-            <li>123 Luxe Boulevard, Elegance Square</li>
-            <li>+1 (234) 567 890</li>
-            <li>hello@thewowfactor.com</li>
+            <li>{ADDRESS}</li>
+            <li><a href={`tel:${PHONE_RAW}`} className="hover:text-primary">{PHONE_DISPLAY}</a></li>
+            <li><a href={WHATSAPP_LINK} className="hover:text-primary">WhatsApp Chat</a></li>
           </ul>
         </div>
       </div>
       <div className="mx-auto mt-12 max-w-7xl border-t border-border pt-6 text-center text-xs text-foreground/55">
-        © {new Date().getFullYear()} The Wow Factor Unisex Salon. All rights reserved.
+        © {new Date().getFullYear()} The Wow Factor Unisex Salon, Indore. All rights reserved.
       </div>
     </footer>
   );
