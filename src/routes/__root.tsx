@@ -85,11 +85,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Indore's premium unisex salon for hair, makeup, skin, nails & spa. 4.9★ rated by 1.4K+ happy clients. Book your appointment today.",
       },
-      { property: "og:title", content: "The Wow Factor Unisex Salon — Indore" },
-      { property: "og:description", content: "Where Beauty Meets Confidence." },
+      { property: "og:title", content: "The Wow Factor Unisex Salon — Premium Beauty Salon in Indore" },
+      { property: "og:description", content: "Experience luxury beauty and grooming services at The Wow Factor Unisex Salon, Indore. Expert bridal makeup, hair styling, facials, skincare, nail services, spa" },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "The Wow Factor Unisex Salon" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "The Wow Factor Unisex Salon — Premium Beauty Salon in Indore" },
+      { name: "description", content: "Experience luxury beauty and grooming services at The Wow Factor Unisex Salon, Indore. Expert bridal makeup, hair styling, facials, skincare, nail services, spa" },
+      { name: "twitter:description", content: "Experience luxury beauty and grooming services at The Wow Factor Unisex Salon, Indore. Expert bridal makeup, hair styling, facials, skincare, nail services, spa" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/81bb4450-c089-4152-96c4-b09612d09933/id-preview-951c54d7--8a9cba4c-bf96-4392-a003-e52df4165770.lovable.app-1781267583604.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/81bb4450-c089-4152-96c4-b09612d09933/id-preview-951c54d7--8a9cba4c-bf96-4392-a003-e52df4165770.lovable.app-1781267583604.png" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
