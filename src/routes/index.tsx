@@ -264,7 +264,7 @@ function TestimonialsPreview() {
         .select("*")
         .order("created_at", { ascending: false })
         .limit(3);
-      return data ?? [];
+      return (data ?? []) as Array<{ id: string; customer_name: string; rating: number; review: string }>;
     },
   });
   return (

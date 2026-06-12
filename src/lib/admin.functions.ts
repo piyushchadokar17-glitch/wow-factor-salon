@@ -15,8 +15,8 @@ export const fetchAdminData = createServerFn({ method: "POST" })
       admin.from("reviews").select("*").order("created_at", { ascending: false }),
     ]);
     return {
-      appointments: appts.data ?? [],
-      messages: msgs.data ?? [],
-      reviews: revs.data ?? [],
+      appointments: (appts.data ?? []) as Array<{ id: string; name: string; mobile: string; email: string | null; service: string; appointment_date: string; appointment_time: string; notes: string | null; created_at: string }>,
+      messages: (msgs.data ?? []) as Array<{ id: string; name: string; email: string; mobile: string | null; message: string; created_at: string }>,
+      reviews: (revs.data ?? []) as Array<{ id: string; customer_name: string; rating: number; review: string; created_at: string }>,
     };
   });
