@@ -4,7 +4,7 @@ import { Check, Calendar, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { PageHeader } from "@/components/site/SiteLayout";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db";
 import { ALL_SERVICES, WHATSAPP_LINK } from "@/lib/salon";
 
 export const Route = createFileRoute("/appointments")({
@@ -67,7 +67,7 @@ function AppointmentsPage() {
       email: parsed.data.email || null,
       notes: parsed.data.notes || null,
     };
-    const { error } = await supabase.from("appointments").insert(payload);
+    const { error } = await db.from("appointments").insert(payload);
     setSubmitting(false);
     if (error) {
       toast.error("Could not book. Please try again or call us.");

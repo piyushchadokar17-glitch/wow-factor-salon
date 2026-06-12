@@ -8,19 +8,11 @@ export const fetchAdminData = createServerFn({ method: "POST" })
       throw new Error("Invalid passcode");
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const admin = supabaseAdmin as unknown as { from: (t: string) => any };
     const [appts, msgs, revs] = await Promise.all([
-      supabaseAdmin
-        .from("appointments")
-        .select("*")
-        .order("created_at", { ascending: false }),
-      supabaseAdmin
-        .from("contact_messages")
-        .select("*")
-        .order("created_at", { ascending: false }),
-      supabaseAdmin
-        .from("reviews")
-        .select("*")
-        .order("created_at", { ascending: false }),
+      admin.from("appointments").select("*").order("created_at", { ascending: false }),
+      admin.from("contact_messages").select("*").order("created_at", { ascending: false }),
+      admin.from("reviews").select("*").order("created_at", { ascending: false }),
     ]);
     return {
       appointments: appts.data ?? [],

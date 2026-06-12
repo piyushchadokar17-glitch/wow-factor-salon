@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ImageIcon } from "lucide-react";
 import { PageHeader } from "@/components/site/SiteLayout";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db";
 import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";
@@ -57,11 +57,11 @@ function GalleryPage() {
   const { data } = useQuery({
     queryKey: ["gallery"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await db
         .from("gallery")
         .select("*")
         .order("created_at", { ascending: false });
-      return data ?? [];
+      return (data ?? []) as Array<{ id: string; image_url: string; category: string }>;
     },
   });
 

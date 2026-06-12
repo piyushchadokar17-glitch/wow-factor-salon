@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { Star, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { PageHeader } from "@/components/site/SiteLayout";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db";
+
 
 export const Route = createFileRoute("/testimonials")({
   head: () => ({
@@ -33,11 +34,13 @@ function TestimonialsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["reviews"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await db
         .from("reviews")
         .select("*")
         .order("created_at", { ascending: false });
-      return data ?? [];
+      return (data ?? []) as Array<{
+        id: string; customer_name: string; rating: number; review: string; created_at: string;
+      }>;
     },
   });
 
@@ -52,7 +55,7 @@ function TestimonialsPage() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("reviews").insert(parsed.data);
+    const { error } = await db.from("reviews").insert(parsed.data);
     setSubmitting(false);
     if (error) {
       toast.error("Could not submit review. Please try again.");

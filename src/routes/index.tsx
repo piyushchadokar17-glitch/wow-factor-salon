@@ -22,7 +22,7 @@ import serviceSpa from "@/assets/service-spa.jpg";
 import serviceHair from "@/assets/service-hair.jpg";
 import serviceNails from "@/assets/service-nails.jpg";
 import { BUSINESS, WHATSAPP_LINK } from "@/lib/salon";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -259,7 +259,7 @@ function TestimonialsPreview() {
   const { data } = useQuery({
     queryKey: ["reviews", "preview"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await db
         .from("reviews")
         .select("*")
         .order("created_at", { ascending: false })

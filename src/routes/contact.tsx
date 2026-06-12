@@ -4,7 +4,7 @@ import { MapPin, Phone, Clock, MessageCircle, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { PageHeader } from "@/components/site/SiteLayout";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db";
 import { BUSINESS, WHATSAPP_LINK } from "@/lib/salon";
 
 export const Route = createFileRoute("/contact")({
@@ -41,7 +41,7 @@ function ContactPage() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("contact_messages").insert({
+    const { error } = await db.from("contact_messages").insert({
       ...parsed.data,
       mobile: parsed.data.mobile || null,
     });
